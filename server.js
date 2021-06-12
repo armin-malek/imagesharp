@@ -12,46 +12,55 @@ app.use(express.json());
 //app.use(express.static("app"));
 
 app.get("/", (req, res) => res.send("I'm Alive!"));
-app.post("/resize", (req, res) => {
-  startDl(req.body).then(() => {
-    res.status(200).send("done");
-  });
+app.post("/resize", async (req, res) => {
+  let links = await startDl(req.body);
+  console.log("sending");
+  res.status(200).send(links);
 });
 app.listen(port, () => console.log(`Resizer is running on ${port}`));
 
 async function startDl(body) {
-  body.imgs.forEach((element) => {
-    downloadImage(element, body.width).then(() => {});
-  });
+  let lins = [];
+  await Promise.all(
+    body.imgs.map(async (element) => {
+      let tmp = await downloadImage(element, body.width);
+      tmp = tmp.replace("/app", "");
+      console.log("rr", tmp);
+      lins.push(tmp);
+    })
+  ).catch((err) => {});
+
+  console.log("return dl", lins);
+  return lins;
 }
 async function downloadImage(url, width = 900) {
+  let loc;
   const res = await axios.get(url, { responseType: "arraybuffer" });
-  sharp(res.data)
+  await sharp(res.data)
     .resize(width)
     .webp()
     .toBuffer()
     .then((data) => {
-      let loc =
+      loc =
         __dirname +
         "/" +
         url
           .split("/")
           .pop()
           .replace("png", "webp")
+          .replace("PNG", "webp")
           .replace("jpg", "webp")
-          .replace("jpeg", "webp");
+          .replace("JPG", "webp")
+          .replace("jpeg", "webp")
+          .replace("JPEG", "webp")
+          .replace("gif", "webp")
+          .replace("GIF", "webp");
       fs.promises.writeFile(loc, data);
       console.log(loc);
+      return loc;
     })
     .catch((err) => {
       Console.log(err);
     });
+  return loc;
 }
-
-/*
-.replace("png", "webp")
-            .replace("jpg", "webp")
-            .replace("jpeg", "webp")
-
-
-*/
