@@ -47,14 +47,14 @@ async function downloadImage(url, width = 900) {
         url
           .split("/")
           .pop()
-          .replace("png", "webp")
-          .replace("PNG", "webp")
-          .replace("jpg", "webp")
-          .replace("JPG", "webp")
-          .replace("jpeg", "webp")
-          .replace("JPEG", "webp")
-          .replace("gif", "webp")
-          .replace("GIF", "webp");
+          .replace(".png", ".webp")
+          .replace(".PNG", ".webp")
+          .replace(".jpg", ".webp")
+          .replace(".JPG", ".webp")
+          .replace(".jpeg", ".webp")
+          .replace(".JPEG", ".webp")
+          .replace(".gif", ".webp")
+          .replace(".GIF", ".webp");
       fs.promises.writeFile(loc, data);
       console.log(loc);
       return loc;
