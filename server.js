@@ -23,7 +23,7 @@ async function startDl(body) {
   let lins = [];
   await Promise.all(
     body.imgs.map(async (element) => {
-      let tmp = await downloadImage(element, body.width);
+      let tmp = await downloadImage(element, body.width, body.thid);
       //console.log("before tmp", tmp);
       if (tmp != undefined) {
         //console.log("OK", tmp);
@@ -36,7 +36,8 @@ async function startDl(body) {
   //console.log("return dl", lins);
   return lins;
 }
-async function downloadImage(url, width = 900) {
+async function downloadImage(url, width = 900, thid) {
+  thid = "--" + thid;
   let loc;
   try {
     const res = await axios.get(url, { responseType: "arraybuffer" });
@@ -51,14 +52,14 @@ async function downloadImage(url, width = 900) {
           url
             .split("/")
             .pop()
-            .replace(".png", ".webp")
-            .replace(".PNG", ".webp")
-            .replace(".jpg", ".webp")
-            .replace(".JPG", ".webp")
-            .replace(".jpeg", ".webp")
-            .replace(".JPEG", ".webp")
-            .replace(".gif", ".webp")
-            .replace(".GIF", ".webp");
+            .replace(".png", thid + ".webp")
+            .replace(".PNG", thid + ".webp")
+            .replace(".jpg", thid + ".webp")
+            .replace(".JPG", thid + ".webp")
+            .replace(".jpeg", thid + ".webp")
+            .replace(".JPEG", thid + ".webp")
+            .replace(".gif", thid + ".webp")
+            .replace(".GIF", thid + ".webp");
         fs.promises.writeFile(loc, data);
         console.log(loc);
         return loc;
